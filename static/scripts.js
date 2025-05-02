@@ -27,20 +27,11 @@ function setHostIP() {
         });
 }
 
-function fetchLogs() {
-    fetch('/logs')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch logs');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const logContainer = document.getElementById('log-container');
-            logContainer.innerHTML = data.logs.map(log => `<div>${log}</div>`).join("");
-            logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to the bottom
-        })
-        .catch(error => console.error('Error fetching logs:', error));
+async function fetchLogs() {
+    const response = await fetch('/logs');
+    const data = await response.json();
+    const logsContainer = document.getElementById('logs');
+    logsContainer.innerHTML = data.logs.map(entry => `<li>${entry}</li>`).join('');
 }
 
 function fetchAlerts() {
@@ -89,6 +80,19 @@ function fetchHostAlerts() {
             hostAlertContainer.scrollTop = hostAlertContainer.scrollHeight; // Auto-scroll to the bottom
         })
         .catch(error => console.error('Error fetching host alerts:', error));
+}
+
+async function fetchHostIP() {
+    const response = await fetch('/host_ip');
+    const data = await response.json();
+    document.getElementById('host-ip').textContent = `Host IP: ${data.host_ip}`;
+}
+
+async function fetchIntrusions() {
+    const response = await fetch('/intrusions');
+    const data = await response.json();
+    const intrusionsContainer = document.getElementById('detected-intrusions');
+    intrusionsContainer.innerHTML = data.intrusions.map(entry => `<li>${entry}</li>`).join('');
 }
 
 setInterval(fetchLogs, 2000); // Fetch logs every 2 seconds

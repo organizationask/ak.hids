@@ -3,9 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIDS Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/scripts.js" defer></script>
+    <title>Host-Based Intrusion Detection System</title>
+    <script>
+        async function fetchHostIP() {
+            const response = await fetch('/host_ip');
+            const data = await response.json();
+            document.getElementById('host-ip').textContent = `Host IP: ${data.host_ip}`;
+        }
+
+        async function fetchMalwareDetections() {
+            const response = await fetch('/malware_detections');
+            const data = await response.json();
+            const malwareContainer = document.getElementById('malware-detections');
+            malwareContainer.innerHTML = data.malware.map(entry => `<li>${entry}</li>`).join('');
+        }
+
+        async function fetchNetworkTraffic() {
+            const response = await fetch('/network_traffic');
+            const data = await response.json();
+            const trafficContainer = document.getElementById('network-traffic');
+            trafficContainer.innerHTML = data.traffic.map(entry => `<li>${entry}</li>`).join('');
+        }
+
+        async function fetchDetectedAttacks() {
+            const response = await fetch('/detected_attacks');
+            const data = await response.json();
+            const attacksContainer = document.getElementById('detected-attacks');
+            attacksContainer.innerHTML = data.attacks.map(entry => `<li>${entry}</li>`).join('');
+        }
+
+        setInterval(fetchHostIP, 5000); // Refresh Host IP every 5 seconds
+        setInterval(fetchMalwareDetections, 2000); // Refresh malware detections every 2 seconds
+        setInterval(fetchNetworkTraffic, 2000); // Refresh network traffic every 2 seconds
+        setInterval(fetchDetectedAttacks, 2000); // Refresh detected attacks every 2 seconds
+    </script>
 </head>
 <body>
     <header>
@@ -14,21 +45,14 @@
     <main>
         <h2>Set Host IP</h2>
         <div>
-            <input type="text" id="host-ip" placeholder="Enter Host IP address">
-            <button onclick="setHostIP()">Set Host IP</button>
+            <p id="host-ip">Host IP: Loading...</p>
         </div>
-
-        <h2>Logs</h2>
-        <div id="log-container" class="log-container"></div>
-
-        <h2>Alerts</h2>
-        <div id="alert-container" class="log-container"></div>
-
-        <h2>Host IP Logs</h2>
-        <div id="host-log-container" class="log-container"></div>
-
-        <h2>Host IP Alerts</h2>
-        <div id="host-alert-container" class="log-container"></div>
+        <h2>Detected Malware:</h2>
+        <ul id="malware-detections"></ul>
+        <h2>Captured Traffic:</h2>
+        <ul id="network-traffic"></ul>
+        <h2>Detected Attacks:</h2>
+        <ul id="detected-attacks"></ul>
     </main>
 </body>
 </html>
